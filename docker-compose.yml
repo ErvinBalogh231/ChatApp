@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  SQLServer:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports: 
+    - 1433:1433
+    environment: 
+        ACCEPT_EULA: "Y"
+        SA_PASSWORD: "Contrasea12345678!"
+    volumes:
+    - chat-data:/var/opt/mssql
+volumes:
+  chat-data:
+        
