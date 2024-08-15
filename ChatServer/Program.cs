@@ -1,5 +1,6 @@
 ﻿using ChatServer.Database.Data;
 using ChatServer.Database.Models;
+using ChatServer.Net;
 using ChatServer.Net.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -18,24 +19,20 @@ namespace ChatServer
             _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 7891);
             _db = new ChatServerContext();
 
+            ServerConsole.Run(_db);
             _listener.Start();
 
             while (true)
             {
                 var client = new Client(_listener.AcceptTcpClient());
                 _clients.Add(client);
-
-                User user = new User();
-                user.Id = client.UId;
-                user.UserName = client.Username;
-                user.ConnectionTime = DateTime.Now;
-
-                _db.Users.Add(user);
-                _db.SaveChanges();
-
+                
+                SaveUserToDb(client);
                 BroadcastConnection();
             }
         }
+
+        
 
         static void BroadcastConnection()
         {
@@ -52,6 +49,18 @@ namespace ChatServer
             }
         }
 
+        static void SaveUserToDb(Client client)
+        {
+            _db.Users.Add(new User
+            {
+                Id = client.UId,
+                UserName = client.Username,
+                ConnectionTime = DateTime.Now
+            });
+
+            _db.SaveChanges();
+        }
+
         public static void BroadcastMessage(string message)
         {
             foreach(var client in _clients)
@@ -61,6 +70,17 @@ namespace ChatServer
                 msgPacket.WriteMessage(message);
                 client.ClientSocket.Client.Send(msgPacket.GetPacketBytes());
             }
+        }
+
+        public static void SaveMessageToDb(Guid UId, string message)
+        {
+            _db.Messages.Add(new Message
+            {
+                SentTime = DateTime.Now,
+                Content = message,
+                UId = UId
+            });
+            _db.SaveChanges();
         }
 
         public static void BroadcastDisconnect(string uid)

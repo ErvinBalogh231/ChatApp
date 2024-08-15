@@ -1,16 +1,16 @@
 ﻿using ChatServer.Net.IO;
 using System.Net.Sockets;
 
-namespace ChatServer
+namespace ChatServer.Net
 {
     internal class Client
     {
-        public string Username {  get; set; }
+        public string Username { get; set; }
         public Guid UId { get; set; }
         public TcpClient ClientSocket { get; set; }
 
         PacketReader _packetReader;
-        public Client(TcpClient client) 
+        public Client(TcpClient client)
         {
             ClientSocket = client;
             UId = Guid.NewGuid();
@@ -37,6 +37,7 @@ namespace ChatServer
                             var msg = _packetReader.ReadMessage();
                             Console.WriteLine($"[{DateTime.Now}]: Message received! {msg}");
                             Program.BroadcastMessage($"[{DateTime.Now}]: [{Username}]: {msg}");
+                            Program.SaveMessageToDb(UId, msg);
                             break;
                         default:
                             break;

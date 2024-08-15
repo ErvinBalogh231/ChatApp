@@ -43,7 +43,7 @@ namespace ChatServer.Migrations
 
                     b.HasIndex("UId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("ChatServer.Database.Models.User", b =>
@@ -61,7 +61,7 @@ namespace ChatServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ChatServer.Database.Models.Message", b =>
