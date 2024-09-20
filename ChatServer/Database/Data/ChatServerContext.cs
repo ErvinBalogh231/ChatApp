@@ -1,6 +1,5 @@
 ﻿using ChatServer.Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace ChatServer.Database.Data
 {
@@ -24,8 +23,8 @@ namespace ChatServer.Database.Data
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Messages)
                 .WithOne(e => e.User)
-                .HasForeignKey(e => e.UId)
-                .HasPrincipalKey(e => e.Id);
+                .HasForeignKey(e => e.Username)
+                .HasPrincipalKey(e => e.UserName);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace ChatServer.Database.Models
         public DateTime SentTime { get; set; }
         public string? Content { get; set; }
 
-        public Guid UId { get; set; }
+        public string Username { get; set; } = null!;
         public User User { get; set; } = null!;
     }
 }

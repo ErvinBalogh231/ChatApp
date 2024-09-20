@@ -8,7 +8,9 @@ namespace ChatApp.Net
         TcpClient _client;
         public PacketReader PacketReader;
 
-        public event Action connectedEvent;
+        public event Action userConnectedEvent;
+        public event Action loginSucceedEvent;
+        public event Action loginFailedEvent;
         public event Action msgReceivedEvent;
         public event Action userDisconnectEvent;
 
@@ -16,22 +18,20 @@ namespace ChatApp.Net
             _client = new TcpClient();
         }
 
-        public void ConnectToServer(string username)
+        public void ConnectToServer(string username, string password)
         {
             if (!_client.Connected)
             {
                 _client.Connect("127.0.0.1", 7891);
                 PacketReader = new PacketReader(_client.GetStream());
-
-                if (!string.IsNullOrEmpty(username))
-                {
-                    var connectPacket = new PacketBuilder();
-                    connectPacket.WriteOpCode(0);
-                    connectPacket.WriteMessage(username);
-                    _client.Client.Send(connectPacket.GetPacketBytes());
-                }
                 ReadPackets();
             }
+
+            var connectPacket = new PacketBuilder();
+            connectPacket.WriteOpCode(0);
+            connectPacket.WriteMessage(username);
+            connectPacket.WriteMessage(password);
+            _client.Client.Send(connectPacket.GetPacketBytes());
         }
 
         private void ReadPackets()
@@ -44,7 +44,13 @@ namespace ChatApp.Net
                     switch (opcode)
                     {
                         case 1:
-                            connectedEvent?.Invoke();
+                            userConnectedEvent?.Invoke();
+                            break;
+                        case 2:
+                            loginSucceedEvent?.Invoke();
+                            break;
+                        case 3:
+                            loginFailedEvent?.Invoke();
                             break;
                         case 5:
                             msgReceivedEvent?.Invoke();
@@ -53,7 +59,7 @@ namespace ChatApp.Net
                             userDisconnectEvent?.Invoke();
                             break;
                         default:
-                            Console.WriteLine("lool");
+                            Console.WriteLine("Invalid operation code!");
                             break;
                     }
                 }

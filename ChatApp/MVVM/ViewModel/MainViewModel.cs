@@ -14,21 +14,35 @@ namespace ChatApp.MVVM.ViewModel
         public RelayCommand SendMessageCommand { get; set; }
 
         public string Username { get; set; }
+        public string Password { get; set; }
         public string Message { get; set; }
+        public bool IsLoggedIn { get; set; } = false;
 
         private Server _server;
-        public MainViewModel() 
+        public MainViewModel()
         {
             Users = new ObservableCollection<UserModel>();
             Messages = new ObservableCollection<string>();
             _server = new Server();
 
-            _server.connectedEvent += UserConnected;
+            _server.userConnectedEvent += UserConnected;
             _server.msgReceivedEvent += MessageReceived;
             _server.userDisconnectEvent += RemoveUser;
+            _server.loginFailedEvent += LoginFailed;
+            _server.loginSucceedEvent += LoginSucceedEvent;
 
-            ConnectToServerCommand = new RelayCommand(o => _server.ConnectToServer(Username), o => !string.IsNullOrEmpty(Username));
-            SendMessageCommand = new RelayCommand(o => _server.SendMessageToServer(Message), o => !string.IsNullOrEmpty(Message));
+            ConnectToServerCommand = new RelayCommand(o => _server.ConnectToServer(Username, Password), o => !string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password) && !IsLoggedIn);
+            SendMessageCommand = new RelayCommand(o => _server.SendMessageToServer(Message), o => !string.IsNullOrEmpty(Message) && IsLoggedIn);
+        }
+
+        private void LoginSucceedEvent()
+        {
+            IsLoggedIn = true;
+        }
+
+        private void LoginFailed()
+        {
+            MessageBox.Show("Invalid username or password!");
         }
 
         private void RemoveUser()

@@ -5,10 +5,8 @@ namespace ChatServer.Database.Models
     internal class User
     {
         [Key]
-        public Guid Id { get; set; }
-        [Required]
-        public string? UserName { get; set; }
-        public DateTime ConnectionTime { get; set; }
+        public string UserName { get; set; } = null!;
+        public string Password { get; set; } = null!;
 
         public ICollection<Message> Messages { get; set; } = null!;
     }

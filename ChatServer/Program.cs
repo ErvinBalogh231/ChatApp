@@ -9,7 +9,7 @@ namespace ChatServer
 {
     class Program
     {
-        static List<Client> _clients;
+        public static List<Client> _clients;
         static TcpListener _listener;
         static ChatServerContext _db;
 
@@ -25,16 +25,32 @@ namespace ChatServer
             while (true)
             {
                 var client = new Client(_listener.AcceptTcpClient());
-                _clients.Add(client);
-                
-                SaveUserToDb(client);
-                BroadcastConnection();
             }
         }
 
-        
+        public static bool IsAuthorized(Client client)
+        {
+            bool isAuthorized = false;
+            _db.Users.ToList().ForEach(user =>
+            {
+                if (user.UserName == client.Username && user.Password == client.Password) { isAuthorized = true; }
+            });
+            return isAuthorized;
+        }
 
-        static void BroadcastConnection()
+        public static void Authorize(Client client)
+        {
+            var loginSucceedPacket = new PacketBuilder();
+            loginSucceedPacket.WriteOpCode(2);
+            client.ClientSocket.Client.Send(loginSucceedPacket.GetPacketBytes());
+        }
+        public static void DenyAcces(Client client)
+        {
+            var authFailedPacket = new PacketBuilder();
+            authFailedPacket.WriteOpCode(3);
+            client.ClientSocket.Client.Send(authFailedPacket.GetPacketBytes());
+        }
+        public static void BroadcastConnection()
         {
             foreach (var client in _clients)
             {
@@ -49,18 +65,6 @@ namespace ChatServer
             }
         }
 
-        static void SaveUserToDb(Client client)
-        {
-            _db.Users.Add(new User
-            {
-                Id = client.UId,
-                UserName = client.Username,
-                ConnectionTime = DateTime.Now
-            });
-
-            _db.SaveChanges();
-        }
-
         public static void BroadcastMessage(string message)
         {
             foreach(var client in _clients)
@@ -72,13 +76,13 @@ namespace ChatServer
             }
         }
 
-        public static void SaveMessageToDb(Guid UId, string message)
+        public static void SaveMessageToDb(string username, string message)
         {
             _db.Messages.Add(new Message
             {
                 SentTime = DateTime.Now,
                 Content = message,
-                UId = UId
+                Username = username
             });
             _db.SaveChanges();
         }

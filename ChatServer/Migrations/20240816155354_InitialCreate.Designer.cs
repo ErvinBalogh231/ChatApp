@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatServer.Migrations
 {
     [DbContext(typeof(ChatServerContext))]
-    [Migration("20240807115643_InitialCreate")]
+    [Migration("20240816155354_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -39,30 +39,27 @@ namespace ChatServer.Migrations
                     b.Property<DateTime>("SentTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("MessageId");
 
-                    b.HasIndex("UId");
+                    b.HasIndex("Username");
 
                     b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ChatServer.Database.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ConnectionTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserName");
 
                     b.ToTable("Users");
                 });
@@ -71,7 +68,7 @@ namespace ChatServer.Migrations
                 {
                     b.HasOne("ChatServer.Database.Models.User", "User")
                         .WithMany("Messages")
-                        .HasForeignKey("UId")
+                        .HasForeignKey("Username")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
