@@ -9,8 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="MVVM\Icons\" />
-    <Folder Include="MVVM\Themes\" />
+    <None Remove="MVVM\View\send-button.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="MVVM\View\send-button.png" />
   </ItemGroup>
 
 </Project>

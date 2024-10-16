@@ -65,12 +65,13 @@ namespace ChatServer
             }
         }
 
-        public static void BroadcastMessage(string message)
+        public static void BroadcastMessage(string message, string user)
         {
             foreach(var client in _clients)
             {
                 var msgPacket = new PacketBuilder();
                 msgPacket.WriteOpCode(5);
+                msgPacket.WriteMessage(user);
                 msgPacket.WriteMessage(message);
                 client.ClientSocket.Client.Send(msgPacket.GetPacketBytes());
             }
@@ -99,7 +100,7 @@ namespace ChatServer
                 client.ClientSocket.Client?.Send(broadcastPacket.GetPacketBytes());
             }
 
-            BroadcastMessage($"[{disconnectedUser.Username}] Disconnected!");
+            BroadcastMessage(disconnectedUser.Username, "[Server] Disconnected");
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace ChatApp.Net
 {
-    class Server
+    public class Server
     {
         TcpClient _client;
         public PacketReader PacketReader;

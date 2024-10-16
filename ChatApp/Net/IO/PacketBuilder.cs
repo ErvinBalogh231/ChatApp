@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ChatApp.Net.IO
 {
-    class PacketBuilder
+    public class PacketBuilder
     {
         MemoryStream _ms;
         public PacketBuilder() 

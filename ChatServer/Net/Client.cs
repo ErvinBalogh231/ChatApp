@@ -56,7 +56,7 @@ namespace ChatServer.Net
                         case 5:
                             var msg = _packetReader.ReadMessage();
                             Console.WriteLine($"[{DateTime.Now}]: Message received from [{Username}]: {msg}");
-                            Program.BroadcastMessage($"[{DateTime.Now}]: [{Username}]: {msg}");
+                            Program.BroadcastMessage(Username, msg);
                             Program.SaveMessageToDb(Username, msg);
                             break;
                         default:

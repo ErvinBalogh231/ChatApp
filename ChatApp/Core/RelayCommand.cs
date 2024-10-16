@@ -1,8 +1,8 @@
 ﻿using System.Windows.Input;
 
-namespace ChatApp.MVVM.Core
+namespace ChatApp.Core
 {
-    class RelayCommand : ICommand
+    public class RelayCommand : ICommand
     {
         private Action<object> _execute;
         private Func<object, bool> _canExecute;
